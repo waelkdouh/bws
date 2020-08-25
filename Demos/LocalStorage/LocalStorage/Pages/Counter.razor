@@ -1,0 +1,26 @@
+﻿@page "/counter"
+
+@inject ILocalStorageService localStore
+
+@noteContent
+
+@code {
+
+    const string noteKey = "Key";
+
+    string noteContent;
+
+    private int currentCount = 0;
+
+    private void IncrementCount()
+    {
+        currentCount++;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        noteContent = await localStore.GetItemAsync<string>(noteKey);
+
+    }
+
+}

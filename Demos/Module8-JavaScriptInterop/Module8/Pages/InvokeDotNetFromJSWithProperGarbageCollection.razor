@@ -1,0 +1,62 @@
+﻿@page "/invokedotnetwithpropergc"
+
+@inject IJSRuntime JSRuntime
+
+@implements IDisposable
+
+<h1>Text received</h1>
+
+<ul>
+    @foreach (string text in TextHistory)
+    {
+        <li>@text</li>
+    }
+</ul>
+
+@code
+{
+    List<string> TextHistory = new List<string>();
+    int GeneratorHandle = -1;
+    DotNetObjectReference<InvokeDotNetFromJSWithProperGarbageCollection> ObjectReference;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        if (firstRender)
+        {
+            ObjectReference = DotNetObjectReference.Create(this);
+            GeneratorHandle = await JSRuntime.InvokeAsync<int>("sut.startRandomGenerator",ObjectReference);
+
+            //JSRuntime.InvokeVoidAsync("sut.startRandomGenerator", ObjectReference);
+        }
+    }
+
+
+    [JSInvokable("AddText")]
+    public void AddTextToTextHistory(string text)
+    {
+        TextHistory.Add(text.ToString());
+        while (TextHistory.Count > 10)
+            TextHistory.RemoveAt(0);
+        StateHasChanged();
+        System.Diagnostics.Debug.WriteLine("DotNet: Received " + text);
+    }
+
+    public async void Dispose()
+    {
+        GC.SuppressFinalize(this);
+
+        if (GeneratorHandle != -1)
+        {
+            //Cancel the callback before disposing the object reference
+            await JSRuntime.InvokeVoidAsync("sut.stopRandomGenerator", GeneratorHandle);
+        }
+
+        if (ObjectReference != null)
+        {
+            //Now dispose the object reference so the component can be garbage collected
+            ObjectReference.Dispose();
+        }
+    }
+
+}

@@ -1,0 +1,45 @@
+﻿@page "/"
+
+<h1>Status: @Status</h1>
+
+<EditForm Model=FormData OnSubmit=FormSubmitted>
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <InputCheckbox @bind-Value=FormData.SomeBooleanProperty />
+    <br />
+    <InputDate @bind-Value=FormData.SomeDateTimeProperty ParsingErrorMessage="Must be a date" />
+    <br />
+    <InputNumber @bind-Value=FormData.SomeIntegerProperty  />
+    <ValidationMessage For="() => FormData.SomeIntegerProperty" />
+    <br />
+    <InputNumber @bind-Value=FormData.SomeDecimalProperty ParsingErrorMessage="Must be a decimal value" />
+    <br />
+    <InputText @bind-Value=FormData.SomeStringProperty />
+    <br />
+    <InputTextArea @bind-Value=FormData.SomeMultiLineStringProperty />
+    <br />
+    <InputSelect @bind-Value=FormData.SomeSelectProperty>
+        <option value="Pending">Pending</option>
+        <option value="Active">Active</option>
+        <option value="Suspended">Suspended</option>
+    </InputSelect>
+    <br />
+    <input type="submit" value="Submit" class="btn btn-primary" />
+</EditForm>
+
+
+@code
+{
+
+    string Status = "Not submitted";
+
+    void FormSubmitted()
+    {
+        Status = "Form submitted";
+        // Post data to the server, etc
+    }
+
+    SomeModel FormData = new SomeModel();
+  
+}

@@ -1,0 +1,47 @@
+﻿@page "/countries"
+<h3>List of countries</h3>
+
+<ChildComponent Items="Countries" TItem="Country">
+    <HeaderTemplate>
+        <th>Name</th>
+        <th>Capital</th>
+    </HeaderTemplate>
+    <RowTemplate>
+        @*<SurveyPrompt Title="testing"></SurveyPrompt>*@
+        <td>@context.CountryName</td>
+        <td>@context.Capital</td>
+    </RowTemplate>
+    <FooterTemplate>
+        <td colspan="2">
+            @context.Count countries found.
+        </td>
+    </FooterTemplate>
+</ChildComponent>
+
+<Component1></Component1>
+
+
+@code {
+    private List<Country> Countries = new List<Country>
+{
+        new Country()
+        {
+            CountryName = "USA",
+            Capital = "Washington, D.C."
+        },
+        new Country()
+        {
+            CountryName = "Lebanon",
+            Capital = "Beirut"
+        },
+        new Country()
+        {
+            CountryName = "France",
+            Capital = "Paris"
+        }
+    };
+
+}
+
+
+

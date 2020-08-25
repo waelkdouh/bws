@@ -1,0 +1,44 @@
+Create a grpc project
+
+Create a console application.
+
+Right click on the console application and click Add -> Service Reference
+
+THis will add three nuget packages to the console application:
+ - Google.Protobuf   - 
+ - Grpc.Net.Client   - .net client
+ - Grpc.Tools        - brings in VS tooling
+ 
+  
+Also the .csproj file now  has the following code:
+  <ItemGroup>
+    <Protobuf Include="protos\greet.proto" GrpcServices="Client" />
+  </ItemGroup>
+  
+
+You need to rebuild on the client project BEFORE you start using the new proto file as you need the file created in the obj directory
+
+Note out that we have a using GrpcServer statement but no reference to it in the client
+
+Remember that we need to start both projects. So set the solution to start both at the same time.
+
+Add the following code to the Main method  
+using System;
+using System.Threading.Tasks;
+
+namespace GrpcClient
+{
+    class Program
+    {
+        static async Task Main(string[] args)
+        {
+            var input = new HelloRequest { Name = "wael" };
+			
+            var channel = GrpcChannel.ForAddress("https://localhost:5001");
+            var client = new Greeter.GreeterClient(channel);
+            var reply = await client.SayHelloAsync(input);
+            Console.WriteLine(reply.Message);
+            Console.ReadLine();
+        }
+    }
+}  

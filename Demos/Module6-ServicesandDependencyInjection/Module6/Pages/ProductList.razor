@@ -1,0 +1,38 @@
+﻿@page "/productlist"
+
+@*TODO: Comment out this to demonstrate code behind*@
+@inject IProductsService productsService
+
+    <div>
+        @foreach (var product in productsService.GetAllProducts())
+        {
+            <div>@product.Name</div>
+            <div>@product.Description</div>
+            <div>@product.UnitPrice</div>
+        }
+    </div>
+
+
+@*TODO: Uncomment this to demonstrate code behind*@
+@*@inherits ProductListBase
+
+Here are the list of products:
+<br />
+<br />
+
+<div>
+    @foreach (var product in productsService.GetAllProducts())
+    {
+        <div>@product.Name</div>
+        <div>@product.Description</div>
+        <div>@product.UnitPrice</div>
+        <br />
+    }
+</div>*@
+
+
+
+
+
+
+

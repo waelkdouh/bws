@@ -1,0 +1,100 @@
+﻿@page "/validation"
+
+@implements IDisposable
+
+<h3>Validation</h3>
+
+@if (LastSubmitResult != null)
+{
+    <h2>
+        Last submit status: @LastSubmitResult
+    </h2>
+}
+
+@*TODO: Can't use OnSubmit event with the other two events*@
+<EditForm EditContext="editContext" OnSubmit=FormSubmitted>
+    @*<EditForm EditContext="editContext" OnValidSubmit=ValidFormSubmitted
+        OnInvalidSubmit=InvalidFormSubmitted>*@
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="Name">Name</label>
+        <InputText @bind-Value=person.Name class="form-control" id="Name" />
+        <ValidationMessage For="() => person.Name" />
+    </div>
+
+    <div class="form-group">
+        <label for="Age">Age</label>
+        <InputNumber @bind-Value=person.Age class="form-control" id="Age" />
+        <ValidationMessage For=@(() => person.Age) />
+    </div>
+
+    <input disabled="@(formInvalid)" type="submit" class="btn btn-primary" value="Save" />
+
+</EditForm>
+
+
+
+
+@code {
+
+    private Person person = new Person();
+
+    private EditContext editContext;
+
+    private bool formInvalid = true;
+
+    private string LastSubmitResult;
+
+    protected override void OnInitialized()
+    {
+        Console.WriteLine("on initialized");
+
+        editContext = new EditContext(person);
+        editContext.OnFieldChanged += HandleFieldChanged;
+
+    }
+
+    private void HandleFieldChanged(object sender, FieldChangedEventArgs e)
+    {
+        formInvalid = !editContext.Validate();
+        //StateHasChanged();
+        Console.WriteLine($"HandleFieldChanged - {editContext.Validate()}");
+    }
+
+    private void ValidFormSubmitted(EditContext editContext)
+    {
+        LastSubmitResult = "OnValidSubmit was executed";
+    }
+
+    private void InvalidFormSubmitted(EditContext editContext)
+    {
+        LastSubmitResult = "OnInvalidSubmit was executed";
+    }
+
+    void FormSubmitted()
+    {
+        Console.WriteLine("FormSubmitted");
+
+        //formInvalid = !editContext.Validate();
+        //LastSubmitResult =
+        //  formInvalid
+        //  ? "Failure - form was invalid"
+        //  : "Success - form was valid";
+
+        LastSubmitResult = "Success - form was valid";
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        Console.WriteLine("OnAfterRender");
+    }
+
+
+    public void Dispose()
+    {
+        editContext.OnFieldChanged -= HandleFieldChanged;
+        Console.WriteLine("OnFieldChanged disposed");
+    }
+}

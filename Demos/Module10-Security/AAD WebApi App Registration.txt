@@ -1,0 +1,5 @@
+Demo_WeatherApi
+
+Application (client) ID:  ed8c883a-5fce-44cb-82da-685c4c01862b
+Directory (tenant) ID: 08cea1ac-ac36-43d0-b57a-fab892fbc01e
+

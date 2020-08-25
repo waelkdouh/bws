@@ -1,0 +1,16 @@
+﻿@*TODO: One-Way Data Binding*@
+Current count in MySecondComponent with One-Way Data Binding: @CurrentCounterValue
+<br />
+<button class="btn btn-primary" @onclick=UpdateCurrentCounterValue>Child Increment Button</button>
+
+
+@code {
+    [Parameter]
+    public int CurrentCounterValue { get; set; }
+
+    void UpdateCurrentCounterValue()
+    {
+        CurrentCounterValue++;
+    }
+
+}

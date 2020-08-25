@@ -1,0 +1,97 @@
+The migration is not just a simple "lets move it over"
+--------------------------------------------------------
+Instead we are going to create a new project and move the content to the new project and then delete the old project
+
+The app_start changed
+
+Dependency injection is built in
+
+move to appsettings.json from web.config
+
+Note: Nuget packages under core are stored at the following directory
+-----
+%userprofile%\.nuget\packages
+
+ 
+Create a BookServiceCore and set it as the startup project. Create it as MVC as I will need a home page:
+---------------------------------------------------------------------------------------------------------
+
+We need to start by generating the dbcontext and the models from the existing database.Install the following nuget packages:
+Microsoft.EntityFrameworkCore
+Microsoft.EntityFrameworkCore.SqlServer
+Microsoft.EntityFrameworkCore.Design
+
+
+Then execute the following command to scaffold the db context
+dotnet ef dbcontext scaffold "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=BookService;" Microsoft.EntityFrameworkCore.SqlServer -o Models
+
+
+Head to the dbcontext file and comment out the following code as we will read the configuration in the startup.cs file
+  protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=BookService;");
+            }
+        }
+
+
+Add the connection string to the appsettings.json
+"ConnectionStrings": {
+    "BookServiceDB": "Server=(localdb)\\mssqllocaldb;Database=BookService;Trusted_Connection=True;"
+ },
+ 
+
+
+The context is typically configured in Startup.cs with the connection string being read from configuration. Note the GetConnectionString() method looks for a configuration value whose key is ConnectionStrings:<connection string name>. You need to import the Microsoft.Extensions.Configuration namespace to use this extension method.
+public void ConfigureServices(IServiceCollection services)
+{
+    services.AddDbContext<BookServiceContext>(options =>
+        options.UseSqlServer(Configuration.GetConnectionString("BookServiceDB")));
+} 
+ 
+
+
+Copy the DTOs from the Models folder in the older project to the new project
+Change the namespace in these files to namespace BookServiceCore.Model
+
+Modify the DTOs to have the [JsonPropertyName("")] attributes
+Otherwise a javascript error will be thrown at runtime if the following atributes are not added.
+In ASP.NET Core 3.0 Web API project, you can specify System.Text.Json serialization options to serialize/deserialize Pascal Case properties to Camel Case and vice versa automatically
+[JsonPropertyName("Id")]        [JsonPropertyName("Title")]    [JsonPropertyName("AuthorName")]
+
+Also modify the Author.cs to include the attribute as thie one has no DTOs
+
+ 
+Copy the controller code from the completed project
+
+Try navigating to the different apis and how how json only is returned although the original project was returning xml
+You will need to add the following to the ConfigureServices method to enable xml
+services.AddControllers().AddXmlDataContractSerializerFormatters();
+
+We can also restrict a certain action to return specific format using the following code:
+[Produces("application/xml")]  
+
+
+Copy the index.cshtml code and replace the scripts section with the following. Remember to copy the app.js and knockout.js to the wwwroot/js folder
+@section Scripts {
+    <script src="~/js/knockout-3.4.0.js"></script>
+    <script src="~/js/app.js"></script>
+}
+
+
+Now its time to add swagger to replace the second tab that was in the original app which which show the api schema.
+https://docs.microsoft.com/en-us/aspnet/core/tutorials/getting-started-with-swashbuckle?view=aspnetcore-3.1&tabs=visual-studio
+
+
+Add the following filter to the action in the Authors controller. It specifies the type of the value and status code returned by the action.
+ public async Task<IActionResult> GetAuthor(int id)
+[ProducesResponseType(StatusCodes.Status200OK)]
+[ProducesResponseType(StatusCodes.Status404NotFound)]
+
+
+A better option it to enable web api analyzers that are built into asp.net core 3 and later which would enforce different conventions when building instead of applying each convention one at a time.
+https://docs.microsoft.com/en-us/aspnet/core/web-api/advanced/analyzers?view=aspnetcore-3.1&tabs=visual-studio
+
+
+ 

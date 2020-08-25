@@ -1,0 +1,41 @@
+﻿@page "/weatherforecast"
+@inject HttpClient Http
+
+<h1>Weather forecast</h1>
+
+<p>This component demonstrates fetching data from the server.</p>
+
+@if (forecasts == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+<ChildComponent Items="forecasts" TItem="WeatherForecast">
+    <HeaderTemplate>
+        <th>Date</th>
+        <th>Temperature</th>
+        <th>Summary</th>
+    </HeaderTemplate>
+    <RowTemplate>
+        <td>@context.Date</td>
+        <td>@context.TemperatureC (@context.TemperatureF F)</td>
+        <td>@context.Summary</td>
+    </RowTemplate>
+    <FooterTemplate>
+        <td colspan="2">
+            @context.Count forecasts found.
+        </td>
+    </FooterTemplate>
+</ChildComponent>
+}
+
+@code {
+    private WeatherForecast[] forecasts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("sample-data/weather.json");
+    }
+   
+}

@@ -1,0 +1,22 @@
+Demo_Blazor_Standalone
+
+Application (client) ID:  2f481533-3086-4b8a-8ea2-2e579ee3c165
+Directory (tenant) ID: 08cea1ac-ac36-43d0-b57a-fab892fbc01e
+
+dotnet new blazorwasm -au SingleOrg --client-id "2f481533-3086-4b8a-8ea2-2e579ee3c165" --tenant-id "08cea1ac-ac36-43d0-b57a-fab892fbc01e" -o BlazorSample
+
+Navigate into the newly created folder and create a new solution
+dotnet new sln --name BlazorSample.sln
+
+
+Basically, the difference between the places where you have the scope is that in program.cs you expect to have UI to login and possibly consent. In the code where you call the REST function you want to rely on having tokens and consents already acquired. No UI.
+
+
+Notes:
+-----
+Those things are not a secret, and you can't do anything useful with them as any auth request needs to go back to the redirect url registered in the provider.
+
+
+Tenant ID and App Client ID aren't generally considered PII nor secrets.
+Not PII because, by themselves, they won't tell you who the user is.
+Not secrets because they are very easy to obtain. Anyone attempting to log in to your application will be exposed to these as they are included in the authorization request.

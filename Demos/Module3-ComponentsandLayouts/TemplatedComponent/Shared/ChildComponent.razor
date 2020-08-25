@@ -1,0 +1,51 @@
+﻿@typeparam TItem
+
+
+<div style="border: solid 4px #111;">
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    @if (HeaderTemplate != null)
+                    {
+                        @HeaderTemplate
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Items)
+                {
+                    <tr>
+                        @RowTemplate(item)
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    @if (FooterTemplate != null)
+                    {
+                        @FooterTemplate(Items)
+                    }
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+
+@code {
+    [Parameter]
+    public RenderFragment HeaderTemplate { get; set; }
+    
+    [Parameter]
+    public RenderFragment<TItem> RowTemplate { get; set; }
+    
+    [Parameter]
+    public RenderFragment<IList<TItem>> FooterTemplate { get; set; }
+    
+    [Parameter]
+    public IList<TItem> Items { get; set; }
+}
+
+
+
