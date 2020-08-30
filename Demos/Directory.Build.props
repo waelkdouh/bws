@@ -1,8 +1,0 @@
-<Project>
-    <PropertyGroup>
-       <AspNetCoreVersion>3.1.6</AspNetCoreVersion>
-        <BlazorVersion>3.2.1</BlazorVersion>
-		<MsalVersion>3.2.1</MsalVersion>
-        <EntityFrameworkVersion>3.1.6</EntityFrameworkVersion>
-	 </PropertyGroup>
-</Project>
